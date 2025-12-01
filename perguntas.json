@@ -1,0 +1,39 @@
+{
+  "infantil": {
+    "geral": [
+      {
+        "pergunta": "Qual animal faz AU AU?",
+        "alternativas": {"A": "Gato", "B": "Cachorro", "C": "Pássaro", "D": "Peixe"},
+        "correta": "B",
+        "explicacao": "O cachorro faz AU AU!"
+      },
+      {
+        "pergunta": "Qual é a cor do céu?",
+        "alternativas": {"A": "Verde", "B": "Vermelho", "C": "Azul", "D": "Amarelo"},
+        "correta": "C",
+        "explicacao": "O céu é azul durante o dia!"
+      }
+    ]
+  },
+  "fundamental1": {
+    "matematica": [
+      {
+        "pergunta": "Quanto é 5 + 3?",
+        "alternativas": {"A": "6", "B": "7", "C": "8", "D": "9"},
+        "correta": "C",
+        "explicacao": "5 + 3 = 8"
+      }
+    ],
+    "portugues": [
+      {
+        "pergunta": "Qual é o plural de 'cão'?",
+        "alternativas": {"A": "Cãos", "B": "Cães", "C": "Cãoes", "D": "Cachorros"},
+        "correta": "B",
+        "explicacao": "O plural de cão é cães."
+      }
+    ]
+  },
+  "fundamental2": {},
+  "medio": {},
+  "superior": {}
+}
