@@ -337,23 +337,25 @@
         const SoundButton = ({ soundEnabled, onClick }) => (
             <button 
                 onClick={(e) => { e.stopPropagation(); onClick(); }} 
-                className="fixed top-4 right-4 z-50 bg-yellow-400 border-4 border-black p-2 rounded shadow-lg hover:scale-110 transition-transform"
+                className="fixed top-4 right-4 z-50 bg-yellow-400 border-4 border-black p-2 rounded-lg shadow-lg hover:scale-105 transition-transform"
                 title={soundEnabled ? "Desligar som" : "Ligar som"}
             >
-                {soundEnabled ? "🔊" : "🔇"}
+                <span className="text-xl">{soundEnabled ? "🔊" : "🔇"}</span>
             </button>
         );
 
-        // Botão de Acessibilidade
+        // Botão de Acessibilidade - com texto
         const AccessibilityButton = ({ enabled, onClick }) => (
             <button 
                 onClick={(e) => { e.stopPropagation(); onClick(); }} 
-                className={`fixed top-4 right-16 z-50 border-4 border-black p-2 rounded shadow-lg hover:scale-110 transition-transform ${
+                className={`fixed top-4 right-14 z-50 border-3 border-black px-2 py-1 rounded shadow-lg hover:scale-105 transition-transform flex items-center gap-1 ${
                     enabled ? 'bg-blue-400' : 'bg-gray-300'
                 }`}
+                style={{ borderWidth: '3px' }}
                 title={enabled ? "Desativar narração" : "Ativar narração para acessibilidade"}
             >
-                ♿
+                <span className="text-sm">♿</span>
+                <span className="pixel-font" style={{ fontSize: '8px' }}>ACESSIBILIDADE</span>
             </button>
         );
 
@@ -1300,7 +1302,7 @@
 
                         {/* Subtítulo animado - Blocos com texto */}
                         <div className="flex gap-1 mb-4 md:mb-8 relative z-10">
-                            {['V','I','V','E','N','D','O'].map((letter, i) => (
+                            {['V','E','R','S','Ã','O'].map((letter, i) => (
                                 <div 
                                     key={i}
                                     className="w-6 h-6 md:w-10 md:h-10 bg-yellow-500 border-2 md:border-4 border-yellow-700 rounded flex items-center justify-center pixel-font text-xs md:text-sm text-yellow-900 font-bold"
@@ -1313,13 +1315,13 @@
                             ))}
                         </div>
                         <div className="flex gap-1 mb-2 relative z-10">
-                            {['V','A','L','O','R','E','S'].map((letter, i) => (
+                            {['I','N','F','A','N','T','I','L'].map((letter, i) => (
                                 <div 
                                     key={i}
                                     className="w-6 h-6 md:w-10 md:h-10 bg-yellow-500 border-2 md:border-4 border-yellow-700 rounded flex items-center justify-center pixel-font text-xs md:text-sm text-yellow-900 font-bold"
                                     style={{
                                         animation: 'blockBounce 0.5s ease-in-out infinite',
-                                        animationDelay: `${(i + 7) * 0.1}s`,
+                                        animationDelay: `${(i + 6) * 0.1}s`,
                                         boxShadow: 'inset -2px -2px 0px #b45309, inset 2px 2px 0px #fef08a'
                                     }}
                                 >{letter}</div>
@@ -1335,7 +1337,7 @@
                                     animation: 'fadeInOut 3s ease-in-out infinite'
                                 }}
                             >
-                                APRENDENDO PARA A VIDA
+                                COLÉGIO MAGNUS
                             </p>
                         </div>
 
