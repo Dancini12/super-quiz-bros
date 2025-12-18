@@ -9,11 +9,26 @@
     <title>Super Quiz Bros - Quiz Educativo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         
         * {
             -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Permitir seleção em inputs e textareas */
+        input, textarea {
+            -webkit-user-select: text !important;
+            user-select: text !important;
+            -webkit-touch-callout: default !important;
+        }
+        
+        /* Desabilitar seleção em outros elementos */
+        body, div, span, button, p, h1, h2, h3, h4, h5, h6, label {
             -webkit-touch-callout: none;
             -webkit-user-select: none;
             user-select: none;
@@ -136,6 +151,29 @@
             0% { transform: scale(0); opacity: 1; }
             50% { transform: scale(1.5); opacity: 1; }
             100% { transform: scale(2); opacity: 0; }
+        }
+
+        /* Modo Alto Contraste para daltonismo */
+        body.high-contrast {
+            filter: contrast(1.3) saturate(1.5);
+        }
+        
+        body.high-contrast button {
+            border-width: 6px !important;
+            font-weight: bold !important;
+        }
+        
+        /* Modo Bordas Grossas para baixa visão */
+        body.bold-borders button {
+            border-width: 6px !important;
+        }
+        
+        body.bold-borders .border-4 {
+            border-width: 6px !important;
+        }
+        
+        body.bold-borders .border-2 {
+            border-width: 4px !important;
         }
     </style>
 </head>
@@ -309,6 +347,31 @@
                 { pergunta: "Qual estação do ano é mais quente?", alternativas: { A: "Inverno", B: "Outono", C: "Verão", D: "Primavera" }, correta: "C", explicacao: "O verão é a estação mais quente!" },
                 { pergunta: "De onde vem o mel?", alternativas: { A: "Das árvores", B: "Das flores e abelhas", C: "Do rio", D: "Das nuvens" }, correta: "B", explicacao: "As abelhas fazem mel a partir das flores!" },
                 { pergunta: "O que cai das árvores no outono?", alternativas: { A: "Neve", B: "Chuva", C: "Folhas", D: "Frutas" }, correta: "C", explicacao: "As folhas caem no outono!" }
+            ],
+            geografia: [
+                // ORIENTAÇÃO
+                { pergunta: "De que lado o sol nasce?", alternativas: { A: "Norte", B: "Sul", C: "Leste", D: "Oeste" }, correta: "C", explicacao: "O sol nasce no Leste, onde fica o lado direito quando olhamos para o Norte!" },
+                { pergunta: "De que lado o sol se põe?", alternativas: { A: "Norte", B: "Sul", C: "Leste", D: "Oeste" }, correta: "D", explicacao: "O sol se põe no Oeste, no final da tarde!" },
+                { pergunta: "Qual instrumento mostra onde fica o Norte?", alternativas: { A: "Relógio", B: "Bússola", C: "Termômetro", D: "Régua" }, correta: "B", explicacao: "A bússola sempre aponta para o Norte!" },
+                { pergunta: "Se você está de frente para o Norte, o Sul fica...", alternativas: { A: "Na frente", B: "Atrás", C: "À direita", D: "À esquerda" }, correta: "B", explicacao: "O Sul fica sempre atrás do Norte!" },
+                { pergunta: "Quantos pontos cardeais existem?", alternativas: { A: "2", B: "3", C: "4", D: "5" }, correta: "C", explicacao: "São 4 pontos cardeais: Norte, Sul, Leste e Oeste!" },
+                // LOCALIZAÇÃO
+                { pergunta: "Onde você mora é chamado de...", alternativas: { A: "Escola", B: "Casa/Endereço", C: "Parque", D: "Hospital" }, correta: "B", explicacao: "O lugar onde moramos é nossa casa, que tem um endereço!" },
+                { pergunta: "O que fica ACIMA da sua cabeça agora?", alternativas: { A: "O chão", B: "Seus pés", C: "O teto/céu", D: "A cadeira" }, correta: "C", explicacao: "Acima da cabeça fica o teto (se estiver dentro) ou o céu (se estiver fora)!" },
+                { pergunta: "O que fica EMBAIXO dos seus pés?", alternativas: { A: "O céu", B: "O teto", C: "O chão", D: "As nuvens" }, correta: "C", explicacao: "Embaixo dos pés fica o chão!" },
+                { pergunta: "Se algo está PERTO, significa que está...", alternativas: { A: "Longe", B: "Distante", C: "Próximo", D: "Escondido" }, correta: "C", explicacao: "Perto significa próximo, bem pertinho de você!" },
+                { pergunta: "O que significa LONGE?", alternativas: { A: "Bem pertinho", B: "Do lado", C: "Muito distante", D: "Em cima" }, correta: "C", explicacao: "Longe significa distante, não está perto!" },
+                { pergunta: "O que fica à DIREITA da porta da sua sala?", alternativas: { A: "Sempre a janela", B: "Depende da sala", C: "Sempre a lousa", D: "Sempre a mesa" }, correta: "B", explicacao: "O que fica à direita depende de cada lugar!" },
+                { pergunta: "DENTRO ou FORA: onde ficam os peixes no aquário?", alternativas: { A: "Fora", B: "Em cima", C: "Dentro", D: "Embaixo" }, correta: "C", explicacao: "Os peixes ficam DENTRO do aquário!" },
+                // CARTOGRAFIA (Mapas)
+                { pergunta: "O que é um MAPA?", alternativas: { A: "Um brinquedo", B: "Um desenho de lugares", C: "Uma comida", D: "Um animal" }, correta: "B", explicacao: "O mapa é um desenho que mostra lugares vistos de cima!" },
+                { pergunta: "No mapa, a cor AZUL geralmente representa...", alternativas: { A: "Florestas", B: "Montanhas", C: "Água (rios e mares)", D: "Cidades" }, correta: "C", explicacao: "No mapa, azul representa água: rios, lagos e mares!" },
+                { pergunta: "No mapa, a cor VERDE geralmente representa...", alternativas: { A: "Água", B: "Vegetação/matas", C: "Deserto", D: "Neve" }, correta: "B", explicacao: "Verde no mapa representa vegetação, árvores e plantas!" },
+                { pergunta: "Um GLOBO mostra o formato de quê?", alternativas: { A: "Da lua", B: "Do sol", C: "Da Terra", D: "De uma casa" }, correta: "C", explicacao: "O globo mostra o formato redondo do planeta Terra!" },
+                { pergunta: "Como vemos os lugares em um mapa?", alternativas: { A: "De lado", B: "De baixo", C: "De cima (vista aérea)", D: "De trás" }, correta: "C", explicacao: "No mapa vemos tudo de cima, como se estivéssemos voando!" },
+                { pergunta: "O que a LEGENDA do mapa explica?", alternativas: { A: "Uma história", B: "O significado dos símbolos", C: "Uma piada", D: "O nome do autor" }, correta: "B", explicacao: "A legenda explica o que cada símbolo e cor significa no mapa!" },
+                { pergunta: "Qual desenho representa uma CASA no mapa?", alternativas: { A: "Um círculo azul", B: "Uma árvore", C: "Um quadradinho", D: "Uma nuvem" }, correta: "C", explicacao: "Casas costumam ser representadas por quadradinhos no mapa!" },
+                { pergunta: "O mapa da sua ESCOLA mostra...", alternativas: { A: "O mundo todo", B: "Só a sala de aula", C: "A escola e seus espaços", D: "Sua casa" }, correta: "C", explicacao: "O mapa da escola mostra as salas, pátio, quadra e outros espaços!" }
             ]
         };
 
@@ -352,21 +415,526 @@
                     enabled ? 'bg-blue-400' : 'bg-gray-300'
                 }`}
                 style={{ borderWidth: '3px' }}
-                title={enabled ? "Desativar narração" : "Ativar narração para acessibilidade"}
+                title="Opções de acessibilidade"
             >
                 <span className="text-sm">♿</span>
                 <span className="pixel-font" style={{ fontSize: '8px' }}>ACESSIBILIDADE</span>
             </button>
         );
 
-        // Componente de Modal de Acessibilidade
-        const AccessibilityModal = ({ onClose, onActivate }) => (
+        // Menu de Acessibilidade com opções
+        const AccessibilityMenu = ({ voiceEnabled, daltonismEnabled, lowVisionEnabled, onClose, onToggleVoice, onOpenDaltonism, onOpenLowVision }) => (
             <div className="fixed inset-0 flex items-center justify-center z-[100] bg-black bg-opacity-70">
                 <div className="bg-white rounded-xl border-4 border-blue-500 p-6 max-w-sm mx-4 shadow-2xl">
                     <div className="text-center mb-4">
                         <span className="text-5xl">♿</span>
                     </div>
-                    <h3 className="pixel-font text-lg text-blue-600 text-center mb-3">MODO ACESSIBILIDADE</h3>
+                    <h3 className="pixel-font text-lg text-blue-600 text-center mb-4">ACESSIBILIDADE</h3>
+                    <p className="text-sm text-gray-600 text-center mb-4">Escolha as opções desejadas:</p>
+                    
+                    {/* Opção 1: Acessibilidade por Voz */}
+                    <button 
+                        onClick={onToggleVoice}
+                        className={`w-full mb-3 p-4 rounded-xl border-4 flex items-center gap-3 transition-all ${
+                            voiceEnabled 
+                                ? 'bg-blue-500 border-blue-700 text-white' 
+                                : 'bg-gray-100 border-gray-300 text-gray-700 hover:bg-blue-50 hover:border-blue-300'
+                        }`}
+                    >
+                        <span className="text-3xl">🗣️</span>
+                        <div className="text-left flex-1">
+                            <div className="pixel-font text-xs mb-1">ACESSIBILIDADE POR VOZ</div>
+                            <div className="text-xs opacity-80">Narração para deficientes visuais</div>
+                        </div>
+                        <span className="text-2xl">{voiceEnabled ? '✅' : '⬜'}</span>
+                    </button>
+                    
+                    {/* Opção 2: Daltonismo */}
+                    <button 
+                        onClick={onOpenDaltonism}
+                        className={`w-full mb-3 p-4 rounded-xl border-4 flex items-center gap-3 transition-all ${
+                            daltonismEnabled 
+                                ? 'bg-purple-500 border-purple-700 text-white' 
+                                : 'bg-gray-100 border-gray-300 text-gray-700 hover:bg-purple-50 hover:border-purple-300'
+                        }`}
+                    >
+                        <span className="text-3xl">🎨</span>
+                        <div className="text-left flex-1">
+                            <div className="pixel-font text-xs mb-1">DALTONISMO</div>
+                            <div className="text-xs opacity-80">Ajuste de cores para daltonismo</div>
+                        </div>
+                        <span className="text-2xl">{daltonismEnabled ? '✅' : '⬜'}</span>
+                    </button>
+                    
+                    {/* Opção 3: Baixa Visão */}
+                    <button 
+                        onClick={onOpenLowVision}
+                        className={`w-full mb-4 p-4 rounded-xl border-4 flex items-center gap-3 transition-all ${
+                            lowVisionEnabled 
+                                ? 'bg-yellow-500 border-yellow-700 text-black' 
+                                : 'bg-gray-100 border-gray-300 text-gray-700 hover:bg-yellow-50 hover:border-yellow-300'
+                        }`}
+                    >
+                        <span className="text-3xl">👁️</span>
+                        <div className="text-left flex-1">
+                            <div className="pixel-font text-xs mb-1">BAIXA VISÃO</div>
+                            <div className="text-xs opacity-80">Alto contraste e texto maior</div>
+                        </div>
+                        <span className="text-2xl">{lowVisionEnabled ? '✅' : '⬜'}</span>
+                    </button>
+                    
+                    <button 
+                        onClick={onClose}
+                        className="w-full bg-gray-600 hover:bg-gray-700 text-white py-3 px-4 rounded-lg pixel-font text-sm"
+                    >
+                        FECHAR
+                    </button>
+                </div>
+            </div>
+        );
+
+        // Modal de Daltonismo
+        const DaltonismModal = ({ currentType, onSelect, onClose, onDisable }) => (
+            <div className="fixed inset-0 flex items-center justify-center z-[100] bg-black bg-opacity-70 p-4">
+                <div className="bg-white rounded-xl border-4 border-purple-500 p-5 max-w-sm w-full shadow-2xl">
+                    <div className="text-center mb-3">
+                        <span className="text-4xl">🎨</span>
+                    </div>
+                    <h3 className="pixel-font text-sm text-purple-600 text-center mb-2">DALTONISMO</h3>
+                    <p className="text-xs text-gray-600 text-center mb-4">Selecione o tipo de daltonismo:</p>
+                    
+                    <div className="space-y-2 mb-4">
+                        {[
+                            { id: 'deuteranopia', name: 'Deuteranopia', desc: 'Dificuldade com verde', colors: ['#0066ff', '#ff6600'] },
+                            { id: 'protanopia', name: 'Protanopia', desc: 'Dificuldade com vermelho', colors: ['#00ccff', '#ffcc00'] },
+                            { id: 'tritanopia', name: 'Tritanopia', desc: 'Dificuldade com azul', colors: ['#ff0066', '#00ff99'] },
+                        ].map(type => (
+                            <button
+                                key={type.id}
+                                onClick={() => onSelect(type.id)}
+                                className={`w-full p-3 rounded-lg border-4 flex items-center gap-3 transition-all ${
+                                    currentType === type.id 
+                                        ? 'bg-purple-500 border-purple-700 text-white' 
+                                        : 'bg-gray-50 border-gray-300 hover:border-purple-400'
+                                }`}
+                            >
+                                <div className="flex gap-1">
+                                    <span className="w-6 h-6 rounded" style={{backgroundColor: type.colors[0]}}></span>
+                                    <span className="w-6 h-6 rounded" style={{backgroundColor: type.colors[1]}}></span>
+                                </div>
+                                <div className="text-left flex-1">
+                                    <div className="pixel-font text-xs">{type.name}</div>
+                                    <div className="text-xs opacity-70">{type.desc}</div>
+                                </div>
+                                {currentType === type.id && <span>✅</span>}
+                            </button>
+                        ))}
+                    </div>
+                    
+                    <div className="flex gap-2">
+                        <button 
+                            onClick={onDisable}
+                            className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-3 rounded-lg pixel-font text-xs"
+                        >
+                            DESATIVAR
+                        </button>
+                        <button 
+                            onClick={onClose}
+                            className="flex-1 bg-purple-500 hover:bg-purple-600 text-white py-2 px-3 rounded-lg pixel-font text-xs"
+                        >
+                            FECHAR
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+
+        // Modal de Baixa Visão
+        const LowVisionModal = ({ settings, onUpdate, onClose, onDisable }) => {
+            const [localSettings, setLocalSettings] = React.useState(settings);
+            
+            return (
+                <div className="fixed inset-0 flex items-center justify-center z-[100] bg-black bg-opacity-70 p-4">
+                    <div className="bg-white rounded-xl border-4 border-yellow-500 p-5 max-w-sm w-full shadow-2xl">
+                        <div className="text-center mb-3">
+                            <span className="text-4xl">👁️</span>
+                        </div>
+                        <h3 className="pixel-font text-sm text-yellow-600 text-center mb-2">BAIXA VISÃO</h3>
+                        <p className="text-xs text-gray-600 text-center mb-4">Ajuste para melhor visualização:</p>
+                        
+                        {/* Tamanho do Texto */}
+                        <div className="mb-4">
+                            <label className="block pixel-font text-xs mb-2 text-gray-700">
+                                📝 TAMANHO DO TEXTO: {localSettings.fontSize}%
+                            </label>
+                            <input 
+                                type="range" 
+                                min="100" 
+                                max="200" 
+                                step="25"
+                                value={localSettings.fontSize}
+                                onChange={(e) => setLocalSettings(prev => ({...prev, fontSize: parseInt(e.target.value)}))}
+                                className="w-full h-3 rounded-lg appearance-none cursor-pointer bg-gray-300"
+                            />
+                            <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>Normal</span>
+                                <span>Grande</span>
+                                <span>Muito Grande</span>
+                            </div>
+                        </div>
+
+                        {/* Contraste */}
+                        <div className="mb-4">
+                            <label className="block pixel-font text-xs mb-2 text-gray-700">
+                                🔆 CONTRASTE: {localSettings.contrast}%
+                            </label>
+                            <input 
+                                type="range" 
+                                min="100" 
+                                max="200" 
+                                step="25"
+                                value={localSettings.contrast}
+                                onChange={(e) => setLocalSettings(prev => ({...prev, contrast: parseInt(e.target.value)}))}
+                                className="w-full h-3 rounded-lg appearance-none cursor-pointer bg-gray-300"
+                            />
+                            <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>Normal</span>
+                                <span>Alto</span>
+                                <span>Muito Alto</span>
+                            </div>
+                        </div>
+
+                        {/* Bordas Grossas */}
+                        <div className="mb-4">
+                            <label className="flex items-center gap-3 cursor-pointer">
+                                <input 
+                                    type="checkbox" 
+                                    checked={localSettings.boldBorders}
+                                    onChange={(e) => setLocalSettings(prev => ({...prev, boldBorders: e.target.checked}))}
+                                    className="w-5 h-5"
+                                />
+                                <span className="pixel-font text-xs text-gray-700">📦 BORDAS MAIS GROSSAS</span>
+                            </label>
+                        </div>
+
+                        {/* Preview */}
+                        <div className="mb-4 p-3 rounded-lg border-4 border-gray-300 text-center" style={{
+                            fontSize: `${localSettings.fontSize}%`,
+                            filter: `contrast(${localSettings.contrast}%)`,
+                            borderWidth: localSettings.boldBorders ? '6px' : '4px'
+                        }}>
+                            <p className="pixel-font text-xs">👁️ PREVIEW</p>
+                            <p className="text-sm">Exemplo de texto</p>
+                        </div>
+                        
+                        <div className="flex gap-2">
+                            <button 
+                                onClick={onDisable}
+                                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-3 rounded-lg pixel-font text-xs"
+                            >
+                                DESATIVAR
+                            </button>
+                            <button 
+                                onClick={() => onUpdate(localSettings)}
+                                className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-black py-2 px-3 rounded-lg pixel-font text-xs"
+                            >
+                                ✅ APLICAR
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Modal de Upload de PDF
+        const PdfUploadModal = ({ onClose, onGenerate, onGenerateFromText, onGenerateFromWeb, loading, error, fileName }) => {
+            const [localFile, setLocalFile] = React.useState(null);
+            const [localFileName, setLocalFileName] = React.useState(fileName || '');
+            const [numQuestions, setNumQuestions] = React.useState(10);
+            const [inputMode, setInputMode] = React.useState('pdf'); // 'pdf', 'text' ou 'web'
+            const [customText, setCustomText] = React.useState('');
+            const [searchTopic, setSearchTopic] = React.useState('');
+            const [searchResults, setSearchResults] = React.useState([]);
+            const [selectedSources, setSelectedSources] = React.useState([]);
+            const [isSearching, setIsSearching] = React.useState(false);
+            const fileInputRef = React.useRef(null);
+
+            const handleFileChange = (e) => {
+                const file = e.target.files[0];
+                if (file && file.type === 'application/pdf') {
+                    setLocalFile(file);
+                    setLocalFileName(file.name);
+                } else {
+                    alert('Por favor, selecione um arquivo PDF válido.');
+                }
+            };
+
+            const handleDrop = (e) => {
+                e.preventDefault();
+                const file = e.dataTransfer.files[0];
+                if (file && file.type === 'application/pdf') {
+                    setLocalFile(file);
+                    setLocalFileName(file.name);
+                } else {
+                    alert('Por favor, solte um arquivo PDF válido.');
+                }
+            };
+
+            const handleDragOver = (e) => {
+                e.preventDefault();
+            };
+
+            const canGenerate = inputMode === 'pdf' 
+                ? localFile 
+                : inputMode === 'text' 
+                    ? customText.trim().length >= 50
+                    : selectedSources.length > 0;
+
+            return (
+                <div className="fixed inset-0 flex items-center justify-center z-[100] bg-black bg-opacity-70 p-4">
+                    <div className="bg-white rounded-xl border-4 border-green-500 p-5 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+                        <div className="text-center mb-3">
+                            <span className="text-5xl">📄</span>
+                        </div>
+                        <h3 className="pixel-font text-lg text-green-600 text-center mb-2">QUIZ PERSONALIZADO</h3>
+                        <p className="text-xs text-gray-600 text-center mb-4">
+                            Escolha como deseja criar seu quiz!
+                        </p>
+
+                        {/* Seletor de modo */}
+                        <div className="flex gap-1 mb-4">
+                            <button
+                                onClick={() => setInputMode('pdf')}
+                                className={`flex-1 py-2 px-2 rounded-lg border-3 pixel-font transition-all ${
+                                    inputMode === 'pdf'
+                                        ? 'bg-green-500 text-white border-green-700'
+                                        : 'bg-gray-100 text-gray-600 border-gray-300 hover:border-green-400'
+                                }`}
+                                style={{fontSize: '9px'}}
+                            >
+                                📄 PDF
+                            </button>
+                            <button
+                                onClick={() => setInputMode('text')}
+                                className={`flex-1 py-2 px-2 rounded-lg border-3 pixel-font transition-all ${
+                                    inputMode === 'text'
+                                        ? 'bg-green-500 text-white border-green-700'
+                                        : 'bg-gray-100 text-gray-600 border-gray-300 hover:border-green-400'
+                                }`}
+                                style={{fontSize: '9px'}}
+                            >
+                                ✏️ TEXTO
+                            </button>
+                            <button
+                                onClick={() => setInputMode('web')}
+                                className={`flex-1 py-2 px-2 rounded-lg border-3 pixel-font transition-all ${
+                                    inputMode === 'web'
+                                        ? 'bg-blue-500 text-white border-blue-700'
+                                        : 'bg-gray-100 text-gray-600 border-gray-300 hover:border-blue-400'
+                                }`}
+                                style={{fontSize: '9px'}}
+                            >
+                                🌐 INTERNET
+                            </button>
+                        </div>
+
+                        {/* Modo PDF */}
+                        {inputMode === 'pdf' && (
+                            <div 
+                                onClick={() => fileInputRef.current?.click()}
+                                onDrop={handleDrop}
+                                onDragOver={handleDragOver}
+                                className={`border-4 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all mb-4 ${
+                                    localFileName 
+                                        ? 'border-green-400 bg-green-50' 
+                                        : 'border-gray-300 bg-gray-50 hover:border-green-400 hover:bg-green-50'
+                                }`}
+                            >
+                                <input 
+                                    ref={fileInputRef}
+                                    type="file" 
+                                    accept=".pdf"
+                                    onChange={handleFileChange}
+                                    className="hidden"
+                                />
+                                {localFileName ? (
+                                    <div>
+                                        <span className="text-4xl">✅</span>
+                                        <p className="pixel-font text-xs text-green-600 mt-2">ARQUIVO SELECIONADO:</p>
+                                        <p className="text-sm text-gray-700 font-bold truncate">{localFileName}</p>
+                                        <p className="text-xs text-gray-500 mt-1">Clique para trocar</p>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <span className="text-4xl">📤</span>
+                                        <p className="pixel-font text-xs text-gray-600 mt-2">CLIQUE OU ARRASTE</p>
+                                        <p className="text-xs text-gray-500">Selecione um arquivo PDF</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Modo Texto */}
+                        {inputMode === 'text' && (
+                            <div className="mb-4">
+                                <textarea
+                                    value={customText}
+                                    onChange={(e) => setCustomText(e.target.value)}
+                                    placeholder="Cole aqui o conteúdo sobre o qual deseja criar o quiz...
+
+Exemplos:
+• Texto de uma apostila ou livro
+• Conteúdo de uma aula
+• Artigo ou notícia
+• Resumo de um tema"
+                                    className="w-full h-40 p-3 border-4 border-gray-300 rounded-xl text-sm focus:border-green-400 focus:outline-none resize-none"
+                                    style={{ userSelect: 'text', WebkitUserSelect: 'text' }}
+                                />
+                                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                    <span>{customText.length} caracteres</span>
+                                    <span className={customText.length >= 50 ? 'text-green-600' : 'text-red-500'}>
+                                        {customText.length >= 50 ? '✅ Suficiente' : '⚠️ Mínimo 50 caracteres'}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Modo Internet */}
+                        {inputMode === 'web' && (
+                            <div className="mb-4">
+                                <div className="flex gap-2 mb-3">
+                                    <input
+                                        type="text"
+                                        value={searchTopic}
+                                        onChange={(e) => setSearchTopic(e.target.value)}
+                                        placeholder="Digite o tema (ex: fotossíntese, revolução francesa)"
+                                        className="flex-1 p-3 border-4 border-gray-300 rounded-lg text-sm focus:border-blue-400 focus:outline-none text-black bg-white"
+                                        style={{ 
+                                            userSelect: 'text', 
+                                            WebkitUserSelect: 'text',
+                                            WebkitTouchCallout: 'default',
+                                            caretColor: 'black'
+                                        }}
+                                        autoComplete="off"
+                                        autoCorrect="off"
+                                        spellCheck="false"
+                                        onKeyPress={(e) => {
+                                            if (e.key === 'Enter' && searchTopic.trim()) {
+                                                onGenerateFromWeb(searchTopic, numQuestions, 'search');
+                                            }
+                                        }}
+                                    />
+                                </div>
+                                
+                                <div className="bg-blue-50 border-2 border-blue-300 rounded-lg p-3 mb-3">
+                                    <p className="text-xs text-blue-700 font-bold mb-2">🔍 Fontes confiáveis utilizadas:</p>
+                                    <div className="grid grid-cols-2 gap-1 text-xs text-blue-600">
+                                        <span>🎓 Brasil Escola</span>
+                                        <span>📖 Info Escola</span>
+                                        <span>🏛️ Gov.br</span>
+                                        <span>📰 Britannica</span>
+                                        <span>🔬 Scielo</span>
+                                        <span>🎓 Sites .edu</span>
+                                    </div>
+                                </div>
+
+                                <div className="bg-green-50 border-2 border-green-300 rounded-lg p-3">
+                                    <p className="text-xs text-green-700 font-bold mb-1">💡 Dicas de pesquisa:</p>
+                                    <ul className="text-xs text-green-600 space-y-1">
+                                        <li>• Seja específico: "Guerra do Paraguai causas"</li>
+                                        <li>• Use termos técnicos: "mitose e meiose"</li>
+                                        <li>• Combine temas: "Brasil colônia economia"</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Quantidade de perguntas */}
+                        <div className="mb-4">
+                            <label className="block pixel-font text-xs mb-2 text-gray-700">
+                                📝 QUANTIDADE DE PERGUNTAS: {numQuestions}
+                            </label>
+                            <input 
+                                type="range" 
+                                min="5" 
+                                max="20" 
+                                value={numQuestions}
+                                onChange={(e) => setNumQuestions(parseInt(e.target.value))}
+                                className="w-full h-3 rounded-lg appearance-none cursor-pointer bg-gray-300"
+                            />
+                            <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>5</span>
+                                <span>10</span>
+                                <span>15</span>
+                                <span>20</span>
+                            </div>
+                        </div>
+
+                        {/* Erro */}
+                        {error && (
+                            <div className="bg-red-50 border-2 border-red-300 rounded-lg p-3 mb-4">
+                                <p className="text-xs text-red-600">❌ {error}</p>
+                            </div>
+                        )}
+
+                        {/* Info específica por modo */}
+                        {inputMode === 'pdf' && (
+                            <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-3 mb-4">
+                                <p className="text-xs text-yellow-700">
+                                    ⚠️ O PDF deve ter texto selecionável (não escaneado). Máximo 20 páginas.
+                                </p>
+                            </div>
+                        )}
+
+                        {/* Botões */}
+                        <div className="flex gap-2">
+                            <button 
+                                onClick={onClose}
+                                disabled={loading}
+                                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-3 px-3 rounded-lg pixel-font text-xs disabled:opacity-50"
+                            >
+                                CANCELAR
+                            </button>
+                            <button 
+                                onClick={() => {
+                                    if (inputMode === 'pdf') {
+                                        onGenerate(localFile, numQuestions);
+                                    } else if (inputMode === 'text') {
+                                        onGenerateFromText(customText, numQuestions);
+                                    } else {
+                                        onGenerateFromWeb(searchTopic, numQuestions, 'search');
+                                    }
+                                }}
+                                disabled={(inputMode === 'pdf' && !localFile) || 
+                                         (inputMode === 'text' && customText.trim().length < 50) ||
+                                         (inputMode === 'web' && !searchTopic.trim()) ||
+                                         loading}
+                                className={`flex-1 ${inputMode === 'web' ? 'bg-blue-500 hover:bg-blue-600' : 'bg-green-500 hover:bg-green-600'} text-white py-3 px-3 rounded-lg pixel-font text-xs disabled:opacity-50 disabled:cursor-not-allowed`}
+                            >
+                                {loading ? (
+                                    <span className="flex items-center justify-center gap-2">
+                                        <span className="animate-spin">⏳</span> {inputMode === 'web' ? 'BUSCANDO...' : 'GERANDO...'}
+                                    </span>
+                                ) : inputMode === 'web' ? (
+                                    '🔍 BUSCAR E GERAR'
+                                ) : (
+                                    '🚀 GERAR QUIZ'
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Componente de Modal de Acessibilidade por Voz (informativo)
+        const AccessibilityVoiceModal = ({ onClose, onActivate }) => (
+            <div className="fixed inset-0 flex items-center justify-center z-[100] bg-black bg-opacity-70">
+                <div className="bg-white rounded-xl border-4 border-blue-500 p-6 max-w-sm mx-4 shadow-2xl">
+                    <div className="text-center mb-4">
+                        <span className="text-5xl">🗣️</span>
+                    </div>
+                    <h3 className="pixel-font text-lg text-blue-600 text-center mb-3">ACESSIBILIDADE POR VOZ</h3>
                     <p className="text-sm text-gray-700 mb-3 text-center">
                         Narração em voz alta para deficientes visuais
                     </p>
@@ -374,7 +942,7 @@
                     <div className="bg-blue-50 border-2 border-blue-300 rounded-lg p-3 mb-3">
                         <p className="text-xs text-blue-700 font-bold mb-1">📖 Como funciona:</p>
                         <ul className="text-xs text-blue-600 space-y-1">
-                            <li>• <b>Toque em qualquer lugar</b> → lê o conteúdo da tela</li>
+                            <li>• <b>Toque em qualquer lugar</b> → lê o conteúdo</li>
                             <li>• <b>Toque em um botão</b> → lê o nome do botão</li>
                             <li>• <b>Toque duplo</b> → executa a ação</li>
                             <li>• <b>Mudança de tela</b> → narra automaticamente</li>
@@ -384,17 +952,13 @@
                     <div className="bg-green-50 border-2 border-green-300 rounded-lg p-3 mb-3">
                         <p className="text-xs text-green-700 font-bold mb-1">✅ Funciona melhor em:</p>
                         <ul className="text-xs text-green-600">
-                            <li>• Google Chrome</li>
-                            <li>• Microsoft Edge</li>
-                            <li>• Safari</li>
-                            <li>• Firefox</li>
+                            <li>• Google Chrome / Edge / Safari / Firefox</li>
                         </ul>
                     </div>
                     
                     <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-3 mb-4">
-                        <p className="text-xs text-yellow-700 font-bold mb-1">⚠️ Importante:</p>
-                        <p className="text-xs text-yellow-600">
-                            Verifique se o volume está ligado. Em alguns dispositivos pode não funcionar.
+                        <p className="text-xs text-yellow-700">
+                            ⚠️ Verifique se o volume está ligado.
                         </p>
                     </div>
                     
@@ -427,6 +991,16 @@
             const [course, setCourse] = useState('');
             const [apiKey, setApiKey] = useState('');
             
+            // Estados para PDF personalizado
+            const [showPdfModal, setShowPdfModal] = useState(false);
+            const [pdfFile, setPdfFile] = useState(null);
+            const [pdfText, setPdfText] = useState('');
+            const [pdfQuestions, setPdfQuestions] = useState([]);
+            const [pdfLoading, setPdfLoading] = useState(false);
+            const [pdfError, setPdfError] = useState('');
+            const [pdfFileName, setPdfFileName] = useState('');
+            const [usePdfQuestions, setUsePdfQuestions] = useState(false);
+            
             // Estados para feedback/melhoria de prompt
             const [feedbackEducation, setFeedbackEducation] = useState('');
             const [feedbackSubject, setFeedbackSubject] = useState('');
@@ -455,12 +1029,58 @@
             const [ranking, setRanking] = useState([]);
             const [showRanking, setShowRanking] = useState(false);
 
-            // Estados para acessibilidade (narração)
+            // Estados para acessibilidade
             const [accessibilityEnabled, setAccessibilityEnabled] = useState(false);
-            const [showAccessibilityModal, setShowAccessibilityModal] = useState(false);
+            const [daltonismEnabled, setDaltonismEnabled] = useState(false);
+            const [daltonismType, setDaltonismType] = useState('');
+            const [lowVisionEnabled, setLowVisionEnabled] = useState(false);
+            const [lowVisionSettings, setLowVisionSettings] = useState({
+                fontSize: 100,
+                contrast: 100,
+                boldBorders: false
+            });
+            const [showAccessibilityMenu, setShowAccessibilityMenu] = useState(false);
+            const [showVoiceModal, setShowVoiceModal] = useState(false);
+            const [showDaltonismModal, setShowDaltonismModal] = useState(false);
+            const [showLowVisionModal, setShowLowVisionModal] = useState(false);
             const [isReading, setIsReading] = useState(false);
             const [lastTap, setLastTap] = useState(0);
             const [pendingAction, setPendingAction] = useState(null);
+
+            // Aplicar filtros de daltonismo
+            useEffect(() => {
+                if (daltonismEnabled && daltonismType) {
+                    const filters = {
+                        deuteranopia: 'hue-rotate(-50deg) saturate(1.5)',
+                        protanopia: 'hue-rotate(-30deg) saturate(1.3)',
+                        tritanopia: 'hue-rotate(180deg) saturate(1.2)'
+                    };
+                    document.body.style.filter = filters[daltonismType] || '';
+                } else if (!lowVisionEnabled) {
+                    document.body.style.filter = '';
+                }
+            }, [daltonismEnabled, daltonismType]);
+
+            // Aplicar configurações de baixa visão
+            useEffect(() => {
+                if (lowVisionEnabled) {
+                    document.documentElement.style.fontSize = `${lowVisionSettings.fontSize}%`;
+                    if (!daltonismEnabled) {
+                        document.body.style.filter = `contrast(${lowVisionSettings.contrast}%)`;
+                    }
+                    if (lowVisionSettings.boldBorders) {
+                        document.body.classList.add('bold-borders');
+                    } else {
+                        document.body.classList.remove('bold-borders');
+                    }
+                } else {
+                    document.documentElement.style.fontSize = '';
+                    if (!daltonismEnabled) {
+                        document.body.style.filter = '';
+                    }
+                    document.body.classList.remove('bold-borders');
+                }
+            }, [lowVisionEnabled, lowVisionSettings]);
 
             // Função para ler texto em voz alta
             const speak = (text, callback) => {
@@ -589,22 +1209,67 @@
                 setLastTap(now);
             };
 
-            // Toggle acessibilidade
+            // Toggle menu de acessibilidade
             const toggleAccessibility = () => {
+                setShowAccessibilityMenu(true);
+            };
+
+            // Toggle acessibilidade por voz
+            const toggleVoiceAccessibility = () => {
                 if (!accessibilityEnabled) {
-                    setShowAccessibilityModal(true);
+                    setShowAccessibilityMenu(false);
+                    setShowVoiceModal(true);
                 } else {
                     stopSpeaking();
                     setAccessibilityEnabled(false);
-                    speak('Modo acessibilidade desativado.');
+                    speak('Acessibilidade por voz desativada.');
                 }
             };
 
-            // Ativar acessibilidade após modal
-            const activateAccessibility = () => {
+            // Abrir modal de daltonismo
+            const openDaltonismModal = () => {
+                setShowAccessibilityMenu(false);
+                setShowDaltonismModal(true);
+            };
+
+            // Selecionar tipo de daltonismo
+            const selectDaltonismType = (type) => {
+                setDaltonismType(type);
+                setDaltonismEnabled(true);
+            };
+
+            // Desativar daltonismo
+            const disableDaltonism = () => {
+                setDaltonismEnabled(false);
+                setDaltonismType('');
+                setShowDaltonismModal(false);
+            };
+
+            // Abrir modal de baixa visão
+            const openLowVisionModal = () => {
+                setShowAccessibilityMenu(false);
+                setShowLowVisionModal(true);
+            };
+
+            // Aplicar configurações de baixa visão
+            const applyLowVisionSettings = (settings) => {
+                setLowVisionSettings(settings);
+                setLowVisionEnabled(true);
+                setShowLowVisionModal(false);
+            };
+
+            // Desativar baixa visão
+            const disableLowVision = () => {
+                setLowVisionEnabled(false);
+                setLowVisionSettings({ fontSize: 100, contrast: 100, boldBorders: false });
+                setShowLowVisionModal(false);
+            };
+
+            // Ativar acessibilidade por voz após modal
+            const activateVoiceAccessibility = () => {
                 setAccessibilityEnabled(true);
-                setShowAccessibilityModal(false);
-                speak('Modo acessibilidade ativado. Toque em qualquer lugar para ouvir o conteúdo. Toque duplo para selecionar. Narrando tela atual.');
+                setShowVoiceModal(false);
+                speak('Acessibilidade por voz ativada. Toque em qualquer lugar para ouvir. Toque duplo para selecionar.');
                 setTimeout(() => narrateScreen(), 3000);
             };
 
@@ -669,7 +1334,8 @@
                     'fundamental1': '👦 Fund. I',
                     'fundamental2': '🧑 Fund. II',
                     'medio': '👨‍🎓 Médio',
-                    'superior': '🎓 Superior'
+                    'superior': '🎓 Superior',
+                    'pdf_custom': '📄 Quiz do PDF'
                 };
                 return labels[edu] || edu;
             };
@@ -821,8 +1487,479 @@
                 }
             };
 
-            const playSound = (type) => {
-                if (!soundEnabled || !synthRef.current) return;
+            // Função para extrair texto do PDF usando pdf.js
+            const extractTextFromPdf = async (file) => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = async (e) => {
+                        try {
+                            const typedArray = new Uint8Array(e.target.result);
+                            const pdf = await pdfjsLib.getDocument(typedArray).promise;
+                            let fullText = '';
+                            
+                            for (let i = 1; i <= Math.min(pdf.numPages, 20); i++) { // Limita a 20 páginas
+                                const page = await pdf.getPage(i);
+                                const textContent = await page.getTextContent();
+                                const pageText = textContent.items.map(item => item.str).join(' ');
+                                fullText += pageText + '\n';
+                            }
+                            
+                            resolve(fullText.trim());
+                        } catch (error) {
+                            reject(error);
+                        }
+                    };
+                    reader.onerror = reject;
+                    reader.readAsArrayBuffer(file);
+                });
+            };
+
+            // Função para gerar perguntas simples a partir do texto (sem IA externa)
+            const generateSimpleQuestions = (text, numQuestions) => {
+                const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 20 && s.trim().length < 200);
+                const questions = [];
+                const usedSentences = new Set();
+                
+                // Padrões para criar perguntas
+                const patterns = [
+                    { regex: /(\w+)\s+é\s+(?:um|uma|o|a)\s+(.+)/i, template: (m) => ({ q: `O que é ${m[1]}?`, a: m[2].trim() }) },
+                    { regex: /(\w+)\s+são\s+(.+)/i, template: (m) => ({ q: `O que são ${m[1]}?`, a: m[2].trim() }) },
+                    { regex: /(\w+)\s+significa\s+(.+)/i, template: (m) => ({ q: `O que significa ${m[1]}?`, a: m[2].trim() }) },
+                    { regex: /(\w+)\s+consiste\s+em\s+(.+)/i, template: (m) => ({ q: `Em que consiste ${m[1]}?`, a: m[2].trim() }) },
+                    { regex: /(?:O|A)\s+(\w+)\s+(?:possui|tem|contém)\s+(.+)/i, template: (m) => ({ q: `O que ${m[1]} possui?`, a: m[2].trim() }) },
+                ];
+                
+                // Extrair palavras-chave importantes
+                const words = text.toLowerCase().split(/\s+/);
+                const wordFreq = {};
+                words.forEach(w => {
+                    if (w.length > 4) wordFreq[w] = (wordFreq[w] || 0) + 1;
+                });
+                const keywords = Object.entries(wordFreq)
+                    .filter(([w, c]) => c >= 2 && c <= 20)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 30)
+                    .map(([w]) => w);
+                
+                // Gerar perguntas a partir das sentenças
+                for (const sentence of sentences) {
+                    if (questions.length >= numQuestions) break;
+                    if (usedSentences.has(sentence)) continue;
+                    
+                    // Tentar aplicar padrões
+                    for (const pattern of patterns) {
+                        const match = sentence.match(pattern.regex);
+                        if (match) {
+                            const { q, a } = pattern.template(match);
+                            if (a.length > 5 && a.length < 100) {
+                                const wrongAnswers = generateWrongAnswers(a, sentences, keywords);
+                                if (wrongAnswers.length >= 3) {
+                                    questions.push(createQuestion(q, a, wrongAnswers));
+                                    usedSentences.add(sentence);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Se não conseguiu perguntas suficientes, criar perguntas de completar
+                if (questions.length < numQuestions) {
+                    for (const sentence of sentences) {
+                        if (questions.length >= numQuestions) break;
+                        if (usedSentences.has(sentence)) continue;
+                        
+                        // Encontrar uma palavra-chave na sentença
+                        for (const keyword of keywords) {
+                            if (sentence.toLowerCase().includes(keyword)) {
+                                const q = `Complete: "${sentence.replace(new RegExp(keyword, 'gi'), '_____').substring(0, 100)}..."`;
+                                const wrongAnswers = generateWrongAnswers(keyword, sentences, keywords);
+                                if (wrongAnswers.length >= 3) {
+                                    questions.push(createQuestion(q, keyword, wrongAnswers));
+                                    usedSentences.add(sentence);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Perguntas de Verdadeiro/Falso como fallback
+                while (questions.length < numQuestions && sentences.length > questions.length) {
+                    const sentence = sentences[questions.length];
+                    if (!usedSentences.has(sentence)) {
+                        questions.push({
+                            pergunta: `Verdadeiro ou Falso: "${sentence.substring(0, 120)}..."`,
+                            alternativas: { A: "Verdadeiro", B: "Falso", C: "Parcialmente verdadeiro", D: "Não é possível afirmar" },
+                            correta: "A",
+                            explicacao: "Esta afirmação está presente no documento."
+                        });
+                        usedSentences.add(sentence);
+                    }
+                }
+                
+                return questions;
+            };
+            
+            const generateWrongAnswers = (correct, sentences, keywords) => {
+                const wrong = [];
+                const correctLower = correct.toLowerCase();
+                
+                // Usar outras palavras-chave como respostas erradas
+                for (const kw of keywords) {
+                    if (kw !== correctLower && !correct.toLowerCase().includes(kw) && wrong.length < 3) {
+                        wrong.push(kw.charAt(0).toUpperCase() + kw.slice(1));
+                    }
+                }
+                
+                // Adicionar respostas genéricas se necessário
+                const genericas = ['Nenhuma das anteriores', 'Todas as anteriores', 'Não se aplica', 'Indefinido', 'Outro conceito'];
+                while (wrong.length < 3) {
+                    const g = genericas[wrong.length];
+                    if (!wrong.includes(g)) wrong.push(g);
+                }
+                
+                return wrong.slice(0, 3);
+            };
+            
+            const createQuestion = (pergunta, correta, erradas) => {
+                const alternativas = [correta, ...erradas];
+                // Embaralhar
+                for (let i = alternativas.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [alternativas[i], alternativas[j]] = [alternativas[j], alternativas[i]];
+                }
+                
+                const correctIndex = alternativas.indexOf(correta);
+                const letters = ['A', 'B', 'C', 'D'];
+                
+                return {
+                    pergunta: pergunta,
+                    alternativas: {
+                        A: alternativas[0],
+                        B: alternativas[1],
+                        C: alternativas[2],
+                        D: alternativas[3]
+                    },
+                    correta: letters[correctIndex],
+                    explicacao: `A resposta correta é: ${correta}`
+                };
+            };
+
+            // Função para gerar perguntas a partir do PDF
+            const generateQuestionsFromPdf = async (file, numQuestions) => {
+                setPdfLoading(true);
+                setPdfError('');
+                
+                try {
+                    // Extrair texto do PDF
+                    const text = await extractTextFromPdf(file);
+                    
+                    if (text.length < 100) {
+                        throw new Error('O PDF não contém texto suficiente. Certifique-se de que o PDF tem texto selecionável (não é uma imagem escaneada).');
+                    }
+                    
+                    setPdfText(text);
+                    setPdfFileName(file.name);
+                    
+                    console.log('📄 Texto extraído:', text.substring(0, 500) + '...');
+                    
+                    // Tentar usar API Claude primeiro
+                    let questions = [];
+                    
+                    try {
+                        questions = await generateQuestionsWithClaude(text, numQuestions);
+                        console.log('✅ Perguntas geradas com Claude:', questions.length);
+                    } catch (apiError) {
+                        console.log('⚠️ Fallback para geração local:', apiError.message);
+                        // Se falhar, usar geração local
+                        questions = generateSimpleQuestions(text, numQuestions);
+                    }
+                    
+                    if (questions.length === 0) {
+                        throw new Error('Não foi possível gerar perguntas a partir deste documento. Tente outro PDF com mais conteúdo textual.');
+                    }
+                    
+                    console.log('✅ Total de perguntas:', questions.length);
+                    
+                    setPdfQuestions(questions);
+                    setUsePdfQuestions(true);
+                    setShowPdfModal(false);
+                    
+                    // Ir para configuração do jogo
+                    setEducationLevel('pdf_custom');
+                    setSubject('pdf');
+                    setScreen('config');
+                    playSound('start');
+                    
+                } catch (error) {
+                    console.error('Erro ao processar PDF:', error);
+                    setPdfError(error.message || 'Erro ao processar o PDF. Tente novamente.');
+                } finally {
+                    setPdfLoading(false);
+                }
+            };
+
+            // Gerar perguntas usando API Claude
+            const generateQuestionsWithClaude = async (text, numQuestions) => {
+                const truncatedText = text.substring(0, 8000); // Limitar tamanho do texto
+                
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'anthropic-version': '2023-06-01',
+                        'anthropic-dangerous-direct-browser-access': 'true'
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-sonnet-4-20250514',
+                        max_tokens: 4000,
+                        messages: [{
+                            role: 'user',
+                            content: `Você é um professor criando um quiz educativo. Com base no texto abaixo, crie exatamente ${numQuestions} perguntas de múltipla escolha em português brasileiro.
+
+REGRAS:
+1. Cada pergunta deve ter 4 alternativas (A, B, C, D)
+2. Apenas uma alternativa deve estar correta
+3. As perguntas devem ser sobre conceitos importantes do texto
+4. Inclua uma breve explicação para cada resposta correta
+5. As perguntas devem ser claras e objetivas
+6. Varie a dificuldade das perguntas
+
+FORMATO DE RESPOSTA (JSON PURO, sem markdown):
+[
+  {
+    "pergunta": "Texto da pergunta?",
+    "alternativas": {
+      "A": "Alternativa A",
+      "B": "Alternativa B", 
+      "C": "Alternativa C",
+      "D": "Alternativa D"
+    },
+    "correta": "B",
+    "explicacao": "Explicação da resposta correta"
+  }
+]
+
+TEXTO DO DOCUMENTO:
+${truncatedText}
+
+Responda APENAS com o JSON, sem texto adicional, sem \`\`\`json, sem explicações.`
+                        }]
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro na API: ' + response.status);
+                }
+
+                const data = await response.json();
+                const content = data.content[0].text;
+                
+                // Limpar possíveis marcações de código
+                let jsonStr = content.trim();
+                if (jsonStr.startsWith('```json')) {
+                    jsonStr = jsonStr.replace(/^```json\n?/, '').replace(/\n?```$/, '');
+                } else if (jsonStr.startsWith('```')) {
+                    jsonStr = jsonStr.replace(/^```\n?/, '').replace(/\n?```$/, '');
+                }
+                
+                const questions = JSON.parse(jsonStr);
+                
+                if (!Array.isArray(questions) || questions.length === 0) {
+                    throw new Error('Formato de resposta inválido');
+                }
+                
+                return questions;
+            };
+
+            // Função para gerar perguntas a partir de texto colado
+            const generateQuestionsFromText = async (text, numQuestions) => {
+                setPdfLoading(true);
+                setPdfError('');
+                
+                try {
+                    if (text.trim().length < 50) {
+                        throw new Error('O texto é muito curto. Por favor, insira pelo menos 50 caracteres.');
+                    }
+                    
+                    setPdfText(text);
+                    setPdfFileName('Texto personalizado');
+                    
+                    console.log('📝 Texto recebido:', text.substring(0, 200) + '...');
+                    
+                    // Tentar usar API Claude
+                    let questions = [];
+                    
+                    try {
+                        questions = await generateQuestionsWithClaude(text, numQuestions);
+                        console.log('✅ Perguntas geradas com Claude:', questions.length);
+                    } catch (apiError) {
+                        console.log('⚠️ Fallback para geração local:', apiError.message);
+                        questions = generateSimpleQuestions(text, numQuestions);
+                    }
+                    
+                    if (questions.length === 0) {
+                        throw new Error('Não foi possível gerar perguntas. Tente adicionar mais conteúdo ao texto.');
+                    }
+                    
+                    console.log('✅ Total de perguntas:', questions.length);
+                    
+                    setPdfQuestions(questions);
+                    setUsePdfQuestions(true);
+                    setShowPdfModal(false);
+                    
+                    // Ir para configuração do jogo
+                    setEducationLevel('pdf_custom');
+                    setSubject('pdf');
+                    setScreen('config');
+                    playSound('start');
+                    
+                } catch (error) {
+                    console.error('Erro ao processar texto:', error);
+                    setPdfError(error.message || 'Erro ao processar o texto. Tente novamente.');
+                } finally {
+                    setPdfLoading(false);
+                }
+            };
+
+            // Função para gerar perguntas a partir de busca na internet
+            const generateQuestionsFromWeb = async (topic, numQuestions) => {
+                setPdfLoading(true);
+                setPdfError('');
+                
+                try {
+                    if (!topic.trim()) {
+                        throw new Error('Por favor, digite um tema para pesquisar.');
+                    }
+                    
+                    console.log('🔍 Buscando sobre:', topic);
+                    
+                    // Usar a API Claude com busca web para pesquisar e gerar perguntas
+                    const response = await fetch('https://api.anthropic.com/v1/messages', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'anthropic-version': '2023-06-01',
+                            'anthropic-dangerous-direct-browser-access': 'true'
+                        },
+                        body: JSON.stringify({
+                            model: 'claude-sonnet-4-20250514',
+                            max_tokens: 4000,
+                            tools: [{
+                                type: 'web_search_20250305',
+                                name: 'web_search'
+                            }],
+                            messages: [{
+                                role: 'user',
+                                content: `Você é um professor criando um quiz educativo sobre "${topic}".
+
+PASSO 1: Use a ferramenta web_search para buscar informações confiáveis sobre "${topic}" em fontes como Brasil Escola, Info Escola, Britannica, sites .gov.br, .edu, Scielo. NÃO use Wikipedia.
+
+PASSO 2: Com base nas informações encontradas, crie exatamente ${numQuestions} perguntas de múltipla escolha em português brasileiro.
+
+REGRAS PARA AS PERGUNTAS:
+1. Cada pergunta deve ter 4 alternativas (A, B, C, D)
+2. Apenas uma alternativa deve estar correta
+3. As perguntas devem ser baseadas em FATOS encontrados na pesquisa
+4. Inclua uma breve explicação para cada resposta correta
+5. Varie a dificuldade das perguntas
+6. Foque em informações educativas e confiáveis
+
+FORMATO DE RESPOSTA FINAL (JSON PURO, sem markdown):
+[
+  {
+    "pergunta": "Texto da pergunta?",
+    "alternativas": {
+      "A": "Alternativa A",
+      "B": "Alternativa B", 
+      "C": "Alternativa C",
+      "D": "Alternativa D"
+    },
+    "correta": "B",
+    "explicacao": "Explicação baseada na fonte pesquisada"
+  }
+]
+
+Após pesquisar, responda APENAS com o JSON das perguntas, sem texto adicional.`
+                            }]
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Erro na busca: ' + response.status);
+                    }
+
+                    const data = await response.json();
+                    
+                    // Processar resposta que pode ter múltiplos blocos
+                    let jsonContent = '';
+                    for (const block of data.content) {
+                        if (block.type === 'text') {
+                            jsonContent += block.text;
+                        }
+                    }
+                    
+                    // Limpar possíveis marcações de código
+                    let jsonStr = jsonContent.trim();
+                    if (jsonStr.startsWith('```json')) {
+                        jsonStr = jsonStr.replace(/^```json\n?/, '').replace(/\n?```$/, '');
+                    } else if (jsonStr.startsWith('```')) {
+                        jsonStr = jsonStr.replace(/^```\n?/, '').replace(/\n?```$/, '');
+                    }
+                    
+                    // Encontrar o array JSON na resposta
+                    const jsonMatch = jsonStr.match(/\[[\s\S]*\]/);
+                    if (!jsonMatch) {
+                        throw new Error('Não foi possível extrair as perguntas da resposta');
+                    }
+                    
+                    const questions = JSON.parse(jsonMatch[0]);
+                    
+                    if (!Array.isArray(questions) || questions.length === 0) {
+                        throw new Error('Nenhuma pergunta foi gerada');
+                    }
+                    
+                    console.log('✅ Perguntas geradas da web:', questions.length);
+                    
+                    setPdfText(`Conteúdo pesquisado sobre: ${topic}`);
+                    setPdfFileName(`Pesquisa: ${topic}`);
+                    setPdfQuestions(questions);
+                    setUsePdfQuestions(true);
+                    setShowPdfModal(false);
+                    
+                    // Ir para configuração do jogo
+                    setEducationLevel('pdf_custom');
+                    setSubject('web');
+                    setScreen('config');
+                    playSound('start');
+                    
+                } catch (error) {
+                    console.error('Erro na busca web:', error);
+                    setPdfError(error.message || 'Erro ao buscar na internet. Tente novamente com outro tema.');
+                } finally {
+                    setPdfLoading(false);
+                }
+            };
+
+            const playSound = async (type) => {
+                if (!soundEnabled) return;
+                
+                // Inicializa áudio se ainda não foi
+                if (!synthRef.current) {
+                    try {
+                        await Tone.start();
+                        synthRef.current = new Tone.PolySynth(Tone.Synth, {
+                            oscillator: { type: 'square' },
+                            envelope: { attack: 0.01, decay: 0.2, sustain: 0.2, release: 0.3 }
+                        }).toDestination();
+                        synthRef.current.volume.value = -10;
+                    } catch(e) {
+                        console.log('Audio não disponível');
+                        return;
+                    }
+                }
+                
                 try {
                     const now = Tone.now();
                     switch(type) {
@@ -862,7 +1999,9 @@
                             synthRef.current.triggerAttackRelease("C5", "0.3", now + 0.75);
                             break;
                     }
-                } catch(e) {}
+                } catch(e) {
+                    console.log('Erro ao tocar som:', e);
+                }
             };
 
             // ==========================================
@@ -994,6 +2133,23 @@
 
             // Função principal para buscar pergunta
             const getQuestion = async () => {
+                // Se estiver usando perguntas do PDF
+                if (usePdfQuestions && pdfQuestions.length > 0) {
+                    const disponiveis = pdfQuestions.filter(p => !perguntasUsadas.includes(p.pergunta));
+                    
+                    if (disponiveis.length === 0) {
+                        console.log('⚠️ Todas as perguntas do PDF foram usadas, resetando...');
+                        perguntasUsadas = [];
+                        return pdfQuestions[Math.floor(Math.random() * pdfQuestions.length)];
+                    }
+                    
+                    const pergunta = disponiveis[Math.floor(Math.random() * disponiveis.length)];
+                    perguntasUsadas.push(pergunta.pergunta);
+                    
+                    console.log('📄 Pergunta do PDF:', pergunta.pergunta);
+                    return pergunta;
+                }
+                
                 // Se for nível infantil, usa perguntas locais
                 if (educationLevel === 'infantil') {
                     return getInfantilQuestion();
@@ -1098,6 +2254,16 @@
                 
                 setScreen('question');
                 await loadQuestion();
+            };
+
+            // Função para voltar ao início e resetar estado do PDF
+            const goToStart = () => {
+                playSound('select');
+                setUsePdfQuestions(false);
+                setPdfQuestions([]);
+                setPdfText('');
+                setPdfFileName('');
+                setScreen('prestart');
             };
 
             const handleAnswer = (key) => {
@@ -1220,20 +2386,67 @@
                 return (
                     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-900 via-blue-700 to-blue-500 text-white fade-in p-4 relative overflow-hidden">
                         <SoundButton soundEnabled={soundEnabled} onClick={toggleSound} />
-                        <AccessibilityButton enabled={accessibilityEnabled} onClick={toggleAccessibility} />
+                        <AccessibilityButton enabled={accessibilityEnabled || daltonismEnabled || lowVisionEnabled} onClick={toggleAccessibility} />
                         
-                        {/* Modal de Acessibilidade */}
-                        {showAccessibilityModal && (
-                            <AccessibilityModal 
-                                onClose={() => setShowAccessibilityModal(false)}
-                                onActivate={activateAccessibility}
+                        {/* Menu de Acessibilidade */}
+                        {showAccessibilityMenu && (
+                            <AccessibilityMenu 
+                                voiceEnabled={accessibilityEnabled}
+                                daltonismEnabled={daltonismEnabled}
+                                lowVisionEnabled={lowVisionEnabled}
+                                onClose={() => setShowAccessibilityMenu(false)}
+                                onToggleVoice={toggleVoiceAccessibility}
+                                onOpenDaltonism={openDaltonismModal}
+                                onOpenLowVision={openLowVisionModal}
                             />
                         )}
 
-                        {/* Indicador de acessibilidade ativa */}
-                        {accessibilityEnabled && (
-                            <div className="fixed bottom-4 left-4 z-40 bg-blue-500 text-white px-3 py-1 rounded-full text-xs pixel-font flex items-center gap-1">
-                                ♿ {isReading ? '🔊 Lendo...' : 'Ativo'}
+                        {/* Modal de Acessibilidade por Voz */}
+                        {showVoiceModal && (
+                            <AccessibilityVoiceModal 
+                                onClose={() => setShowVoiceModal(false)}
+                                onActivate={activateVoiceAccessibility}
+                            />
+                        )}
+
+                        {/* Modal de Daltonismo */}
+                        {showDaltonismModal && (
+                            <DaltonismModal 
+                                currentType={daltonismType}
+                                onSelect={selectDaltonismType}
+                                onClose={() => setShowDaltonismModal(false)}
+                                onDisable={disableDaltonism}
+                            />
+                        )}
+
+                        {/* Modal de Baixa Visão */}
+                        {showLowVisionModal && (
+                            <LowVisionModal 
+                                settings={lowVisionSettings}
+                                onUpdate={applyLowVisionSettings}
+                                onClose={() => setShowLowVisionModal(false)}
+                                onDisable={disableLowVision}
+                            />
+                        )}
+
+                        {/* Indicadores de acessibilidade ativa */}
+                        {(accessibilityEnabled || daltonismEnabled || lowVisionEnabled) && (
+                            <div className="fixed bottom-4 left-4 z-40 flex gap-2 flex-wrap">
+                                {accessibilityEnabled && (
+                                    <div className="bg-blue-500 text-white px-3 py-1 rounded-full text-xs pixel-font flex items-center gap-1">
+                                        🗣️ Voz
+                                    </div>
+                                )}
+                                {daltonismEnabled && (
+                                    <div className="bg-purple-500 text-white px-3 py-1 rounded-full text-xs pixel-font flex items-center gap-1">
+                                        🎨 Daltonismo
+                                    </div>
+                                )}
+                                {lowVisionEnabled && (
+                                    <div className="bg-yellow-500 text-black px-3 py-1 rounded-full text-xs pixel-font flex items-center gap-1">
+                                        👁️ Baixa Visão
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -1337,7 +2550,7 @@
                                     animation: 'fadeInOut 3s ease-in-out infinite'
                                 }}
                             >
-                               Versao Beta
+                                COLÉGIO MAGNUS
                             </p>
                         </div>
 
@@ -1346,7 +2559,12 @@
                             onClick={() => handleAccessibleClick('Botão Iniciar Jogo. Pressione novamente para começar.', async () => {
                                 await initAudio();
                                 playSound('start');
-                                setScreen('mode');
+                                // VERSÃO INFANTIL: Vai direto para config do infantil
+                                setEducationLevel('infantil');
+                                setCourse('');
+                                setScreen('config');
+                                // PARA ATIVAR OUTROS NÍVEIS, COMENTE AS 3 LINHAS ACIMA E DESCOMENTE A LINHA ABAIXO:
+                                // setScreen('mode');
                             })} 
                             className="relative z-10 bg-gradient-to-b from-red-500 to-red-700 text-white font-bold py-3 px-6 md:py-4 md:px-8 rounded-lg border-4 border-red-300 pixel-font text-sm md:text-lg shadow-lg hover:from-red-400 hover:to-red-600 transition-all mb-3 md:mb-4 active:scale-95"
                             style={{
@@ -1372,6 +2590,21 @@
                             🏆 RANKING
                         </button>
 
+                        {/* Botão Quiz Personalizado */}
+                        <button 
+                            onClick={() => handleAccessibleClick('Botão Quiz Personalizado. Criar quiz a partir de PDF ou texto.', async () => {
+                                await initAudio();
+                                playSound('select');
+                                setShowPdfModal(true);
+                            })} 
+                            className="relative z-10 bg-gradient-to-b from-green-500 to-green-700 text-white font-bold py-2 px-4 md:py-3 md:px-6 rounded-lg border-4 border-green-300 pixel-font text-xs md:text-sm shadow-lg hover:from-green-400 hover:to-green-600 transition-all mb-3 active:scale-95"
+                            style={{
+                                boxShadow: '0 4px 0px #166534, 0 6px 8px rgba(0,0,0,0.3)'
+                            }}
+                        >
+                            ✏️ QUIZ PERSONALIZADO
+                        </button>
+
                         {/* Botão Feedback/Melhorar */}
                         <button 
                             onClick={() => handleAccessibleClick('Botão Ajude a Melhorar. Enviar sugestões.', async () => {
@@ -1387,6 +2620,19 @@
                         >
                             💡 AJUDE A MELHORAR
                         </button>
+
+                        {/* Modal de Upload de PDF/Texto/Web */}
+                        {showPdfModal && (
+                            <PdfUploadModal 
+                                onClose={() => setShowPdfModal(false)}
+                                onGenerate={generateQuestionsFromPdf}
+                                onGenerateFromText={generateQuestionsFromText}
+                                onGenerateFromWeb={generateQuestionsFromWeb}
+                                loading={pdfLoading}
+                                error={pdfError}
+                                fileName={pdfFileName}
+                            />
+                        )}
 
                         {/* Crédito */}
                         <div className="relative z-20 text-center mb-2 md:mb-4">
@@ -1424,11 +2670,15 @@
                 );
             }
 
+            /* =====================================================
+               TELA DE SELEÇÃO DE MODO (1P/2P) - COMENTADA
+               Para ativar: descomente este bloco e altere o PRESS START
+               ===================================================== */
+            /*
             if (screen === 'mode') {
                 return (
                     <div className="min-h-screen bg-gradient-to-b from-indigo-900 via-purple-800 to-purple-600 p-4 flex flex-col items-center justify-center fade-in relative overflow-hidden">
                         <SoundButton soundEnabled={soundEnabled} onClick={toggleSound} />
-                        {/* Elementos decorativos */}
                         <div className="absolute top-10 left-10 text-5xl opacity-60" style={{animation: 'floatCloud 4s ease-in-out infinite'}}>⭐</div>
                         <div className="absolute top-20 right-16 text-4xl opacity-40" style={{animation: 'floatCloud 3s ease-in-out infinite reverse'}}>⭐</div>
                         <div className="absolute bottom-32 left-16 text-3xl opacity-50" style={{animation: 'floatCloud 5s ease-in-out infinite'}}>🌙</div>
@@ -1470,18 +2720,21 @@
                             ← VOLTAR
                         </button>
 
-                        {/* Chão */}
                         <div className="absolute bottom-0 left-0 right-0 h-12 bg-purple-900 border-t-4 border-purple-950"></div>
                     </div>
                 );
             }
+            */
 
-            // TELA DE SELEÇÃO DE NÍVEL DE ENSINO
+            /* =====================================================
+               TELA DE SELEÇÃO DE NÍVEL DE ENSINO - COMENTADA
+               Para ativar: descomente este bloco
+               ===================================================== */
+            /*
             if (screen === 'education') {
                 return (
                     <div className="min-h-screen bg-gradient-to-b from-cyan-600 via-blue-600 to-indigo-700 p-4 flex flex-col items-center fade-in relative overflow-hidden">
                         <SoundButton soundEnabled={soundEnabled} onClick={toggleSound} />
-                        {/* Elementos decorativos */}
                         <div className="absolute top-10 left-5 text-4xl opacity-60" style={{animation: 'floatCloud 4s ease-in-out infinite'}}>📚</div>
                         <div className="absolute top-20 right-10 text-5xl opacity-40" style={{animation: 'floatCloud 3s ease-in-out infinite reverse'}}>🎓</div>
                         <div className="absolute bottom-32 right-16 text-3xl opacity-50" style={{animation: 'floatCloud 5s ease-in-out infinite'}}>✏️</div>
@@ -1490,7 +2743,6 @@
                         <h2 className="text-2xl md:text-3xl text-yellow-400 pixel-font mb-6 text-center drop-shadow-lg">NÍVEL DE ENSINO</h2>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl w-full px-4 relative z-10">
-                            {/* Educação Infantil */}
                             <button 
                                 onClick={() => { 
                                     playSound('select');
@@ -1507,7 +2759,6 @@
                                 </div>
                             </button>
 
-                            {/* Fundamental 1 */}
                             <button 
                                 onClick={() => { 
                                     playSound('select');
@@ -1524,7 +2775,6 @@
                                 </div>
                             </button>
 
-                            {/* Fundamental 2 */}
                             <button 
                                 onClick={() => { 
                                     playSound('select');
@@ -1541,7 +2791,6 @@
                                 </div>
                             </button>
 
-                            {/* Ensino Médio */}
                             <button 
                                 onClick={() => { 
                                     playSound('select');
@@ -1558,7 +2807,6 @@
                                 </div>
                             </button>
 
-                            {/* Ensino Superior */}
                             <button 
                                 onClick={() => { 
                                     playSound('select');
@@ -1582,18 +2830,21 @@
                             ← VOLTAR
                         </button>
 
-                        {/* Chão */}
                         <div className="absolute bottom-0 left-0 right-0 h-12 bg-indigo-900 border-t-4 border-indigo-950"></div>
                     </div>
                 );
             }
+            */
 
-            // TELA DE CONFIGURAÇÃO DO ENSINO SUPERIOR
+            /* =====================================================
+               TELA DE CONFIGURAÇÃO DO ENSINO SUPERIOR - COMENTADA
+               Para ativar: descomente este bloco
+               ===================================================== */
+            /*
             if (screen === 'superior_config') {
                 return (
                     <div className="min-h-screen bg-gradient-to-b from-purple-900 via-purple-700 to-indigo-800 p-4 flex flex-col items-center fade-in relative overflow-hidden">
                         <SoundButton soundEnabled={soundEnabled} onClick={toggleSound} />
-                        {/* Elementos decorativos */}
                         <div className="absolute top-10 left-10 text-5xl opacity-40" style={{animation: 'floatCloud 4s ease-in-out infinite'}}>🎓</div>
                         <div className="absolute top-20 right-16 text-4xl opacity-30" style={{animation: 'floatCloud 3s ease-in-out infinite reverse'}}>📖</div>
 
@@ -1665,11 +2916,11 @@
                             </button>
                         </div>
 
-                        {/* Chão */}
                         <div className="absolute bottom-0 left-0 right-0 h-12 bg-purple-950 border-t-4 border-black"></div>
                     </div>
                 );
             }
+            */
 
             if (screen === 'config') {
                 const educationLabels = {
@@ -1742,7 +2993,8 @@
                                                 { id: 'formas', label: '⬛ Formas', color: 'green' },
                                                 { id: 'corpo', label: '🖐️ Corpo', color: 'red' },
                                                 { id: 'frutas', label: '🍎 Frutas', color: 'yellow' },
-                                                { id: 'natureza', label: '🌳 Natureza', color: 'teal' }
+                                                { id: 'natureza', label: '🌳 Natureza', color: 'teal' },
+                                                { id: 'geografia', label: '🌍 Geografia', color: 'cyan' }
                                             ].map(tema => (
                                                 <button 
                                                     key={tema.id}
@@ -1881,7 +3133,7 @@
                             </button>
 
                             <button 
-                                onClick={() => { playSound('select'); setScreen(educationLevel === 'superior' ? 'superior_config' : 'education'); }}
+                                onClick={() => { playSound('select'); setScreen('prestart'); }}
                                 className="w-full mt-3 text-gray-500 pixel-font text-xs hover:text-gray-800 transition-colors"
                             >
                                 ← VOLTAR
@@ -1950,20 +3202,67 @@
                 return (
                     <div className="min-h-screen bg-gradient-to-b from-sky-300 to-sky-100 p-4">
                         <SoundButton soundEnabled={soundEnabled} onClick={toggleSound} />
-                        <AccessibilityButton enabled={accessibilityEnabled} onClick={toggleAccessibility} />
+                        <AccessibilityButton enabled={accessibilityEnabled || daltonismEnabled || lowVisionEnabled} onClick={toggleAccessibility} />
                         
-                        {/* Modal de Acessibilidade */}
-                        {showAccessibilityModal && (
-                            <AccessibilityModal 
-                                onClose={() => setShowAccessibilityModal(false)}
-                                onActivate={activateAccessibility}
+                        {/* Menu de Acessibilidade */}
+                        {showAccessibilityMenu && (
+                            <AccessibilityMenu 
+                                voiceEnabled={accessibilityEnabled}
+                                daltonismEnabled={daltonismEnabled}
+                                lowVisionEnabled={lowVisionEnabled}
+                                onClose={() => setShowAccessibilityMenu(false)}
+                                onToggleVoice={toggleVoiceAccessibility}
+                                onOpenDaltonism={openDaltonismModal}
+                                onOpenLowVision={openLowVisionModal}
                             />
                         )}
 
-                        {/* Indicador de acessibilidade ativa */}
-                        {accessibilityEnabled && (
-                            <div className="fixed bottom-4 left-4 z-40 bg-blue-500 text-white px-3 py-1 rounded-full text-xs pixel-font flex items-center gap-1">
-                                ♿ {isReading ? '🔊 Lendo...' : 'Ativo'}
+                        {/* Modal de Acessibilidade por Voz */}
+                        {showVoiceModal && (
+                            <AccessibilityVoiceModal 
+                                onClose={() => setShowVoiceModal(false)}
+                                onActivate={activateVoiceAccessibility}
+                            />
+                        )}
+
+                        {/* Modal de Daltonismo */}
+                        {showDaltonismModal && (
+                            <DaltonismModal 
+                                currentType={daltonismType}
+                                onSelect={selectDaltonismType}
+                                onClose={() => setShowDaltonismModal(false)}
+                                onDisable={disableDaltonism}
+                            />
+                        )}
+
+                        {/* Modal de Baixa Visão */}
+                        {showLowVisionModal && (
+                            <LowVisionModal 
+                                settings={lowVisionSettings}
+                                onUpdate={applyLowVisionSettings}
+                                onClose={() => setShowLowVisionModal(false)}
+                                onDisable={disableLowVision}
+                            />
+                        )}
+
+                        {/* Indicadores de acessibilidade ativa */}
+                        {(accessibilityEnabled || daltonismEnabled || lowVisionEnabled) && (
+                            <div className="fixed bottom-4 left-4 z-40 flex gap-2 flex-wrap">
+                                {accessibilityEnabled && (
+                                    <div className="bg-blue-500 text-white px-3 py-1 rounded-full text-xs pixel-font flex items-center gap-1">
+                                        🗣️ Voz
+                                    </div>
+                                )}
+                                {daltonismEnabled && (
+                                    <div className="bg-purple-500 text-white px-3 py-1 rounded-full text-xs pixel-font flex items-center gap-1">
+                                        🎨 Daltonismo
+                                    </div>
+                                )}
+                                {lowVisionEnabled && (
+                                    <div className="bg-yellow-500 text-black px-3 py-1 rounded-full text-xs pixel-font flex items-center gap-1">
+                                        👁️ Baixa Visão
+                                    </div>
+                                )}
                             </div>
                         )}
 
