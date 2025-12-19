@@ -1811,8 +1811,8 @@ Responda APENAS com o JSON, sem texto adicional, sem \`\`\`json, sem explicaçõ
                 }
             };
 
-            // Chave da API Serper.dev
-            const SERPER_API_KEY = 'c509bf01ddee7124414c02d0f53dd30b0c83575d';
+            // URL da API de busca no Vercel
+            const SEARCH_API_URL = 'https://quiz-search-api.vercel.app/api/search';
 
             // Função para gerar perguntas a partir de busca na internet
             const generateQuestionsFromWeb = async (topic, numQuestions) => {
@@ -1826,46 +1826,37 @@ Responda APENAS com o JSON, sem texto adicional, sem \`\`\`json, sem explicaçõ
                     
                     console.log('🔍 Buscando sobre:', topic);
                     
-                    // Buscar conteúdo via API Serper.dev
-                    const searchResponse = await fetch('https://google.serper.dev/search', {
+                    // Buscar conteúdo via API Vercel (Serper.dev)
+                    const searchResponse = await fetch(SEARCH_API_URL, {
                         method: 'POST',
                         headers: {
-                            'X-API-KEY': SERPER_API_KEY,
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            q: topic + ' site:brasilescola.uol.com.br OR site:infoescola.com OR site:gov.br OR site:britannica.com OR site:scielo.br',
-                            gl: 'br',
-                            hl: 'pt-br',
-                            num: 10
+                            query: topic
                         })
                     });
 
                     if (!searchResponse.ok) {
-                        throw new Error('Erro na busca: ' + searchResponse.status);
+                        const errorData = await searchResponse.json().catch(() => ({}));
+                        throw new Error(errorData.error || 'Erro na busca: ' + searchResponse.status);
                     }
 
                     const searchData = await searchResponse.json();
                     
-                    // Extrair conteúdo dos resultados
-                    const results = (searchData.organic || []);
-                    
-                    if (results.length === 0) {
-                        throw new Error('Não foram encontrados resultados sobre este tema. Tente outro termo.');
+                    if (!searchData.content || searchData.content.length < 50) {
+                        throw new Error('Não foi encontrado conteúdo suficiente sobre este tema. Tente outro termo.');
                     }
-                    
-                    // Combinar snippets para criar conteúdo
-                    const content = results.map(r => `${r.title}: ${r.snippet}`).join('\n\n');
-                    const sources = results.slice(0, 3).map(r => new URL(r.link).hostname).join(', ');
 
-                    console.log('📄 Conteúdo encontrado:', content.substring(0, 300) + '...');
+                    console.log('📄 Conteúdo encontrado:', searchData.content.substring(0, 300) + '...');
                     
-                    if (content.length < 100) {
-                        throw new Error('Não foi encontrado conteúdo suficiente. Tente outro tema.');
-                    }
+                    // Extrair fontes
+                    const sources = (searchData.results || []).slice(0, 3).map(r => {
+                        try { return new URL(r.link).hostname; } catch { return ''; }
+                    }).filter(Boolean).join(', ');
                     
                     // Gerar perguntas a partir do conteúdo encontrado
-                    const questions = generateSimpleQuestions(content, numQuestions);
+                    const questions = generateSimpleQuestions(searchData.content, numQuestions);
                     
                     if (questions.length === 0) {
                         throw new Error('Não foi possível gerar perguntas. Tente outro tema.');
@@ -1873,8 +1864,8 @@ Responda APENAS com o JSON, sem texto adicional, sem \`\`\`json, sem explicaçõ
                     
                     console.log('✅ Perguntas geradas:', questions.length);
                     
-                    setPdfText(content);
-                    setPdfFileName(`Pesquisa: ${topic} (${sources})`);
+                    setPdfText(searchData.content);
+                    setPdfFileName(`Pesquisa: ${topic}${sources ? ` (${sources})` : ''}`);
                     setPdfQuestions(questions);
                     setUsePdfQuestions(true);
                     setShowPdfModal(false);
